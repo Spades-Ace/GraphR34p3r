@@ -1,0 +1,826 @@
+#root {
+  max-width: 100%; /* Changed from 1280px to use full width */
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  width: 100%;
+  height: 100vh;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+/* Dark/Light mode theming with purple hue */
+:root {
+  --bg-color: #ffffff;
+  --text-color: #333333;
+  --panel-bg: #f5f5f5;
+  --border-color: #e0e0e0;
+  --primary-color: #6a5acd; /* Purple hue */
+  --secondary-color: #9370db; /* Medium purple */
+  --hover-color: #483d8b; /* Dark slate blue */
+  --error-color: #e74c3c;
+  --node-bg: #ffffff;
+  --node-selected: #ede9fe; /* Light purple */
+  --accent-color: #8b5cf6; /* Bright purple */
+}
+
+.dark {
+  --bg-color: #1e1e2e; /* Darker background with purple tint */
+  --text-color: #f8f8f2;
+  --panel-bg: #282a36;
+  --border-color: #44475a;
+  --primary-color: #bd93f9; /* Purple vampire */
+  --secondary-color: #ff79c6; /* Pink */
+  --hover-color: #9580ff; /* Light purple hover */
+  --error-color: #ff5555;
+  --node-bg: #282a36;
+  --node-selected: #44475a;
+  --accent-color: #bd93f9; /* Dracula purple */
+}
+
+/* General App Styling */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* Prevent scrolling on the body */
+}
+
+.app {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Header styling */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background-color: var(--panel-bg);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  height: 60px; /* Fixed height for header */
+}
+
+.header h1 {
+  font-size: 1.5rem;
+  margin: 0;
+  color: var(--primary-color);
+  font-weight: 600;
+}
+
+.header-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+  background-color: var(--hover-color);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+button:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Main content layout */
+.content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: calc(100vh - 60px);
+  overflow: hidden;
+}
+
+/* Graph View Layout */
+.graph-view {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 220px;
+  min-width: 220px; /* Added to prevent shrinking */
+  height: 100%;
+  background-color: var(--panel-bg);
+  border-right: 1px solid var(--border-color);
+  padding: 1rem;
+  overflow-y: auto;
+  box-shadow: 1px 0 5px rgba(0, 0, 0, 0.05);
+  z-index: 5;
+}
+
+.flow-container {
+  flex: 1;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Node Panel Styling */
+.node-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.node-panel h3 {
+  font-size: 1rem;
+  margin-top: 0.5rem;
+  color: var(--accent-color);
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.5rem;
+}
+
+.dndnode {
+  padding: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+  background-color: var(--node-bg);
+  cursor: grab;
+  font-size: 0.9rem;
+  text-align: center;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative; /* Added for position context */
+}
+
+.dndnode:hover {
+  box-shadow: 0 0 10px rgba(106, 90, 205, 0.2);
+  background-color: var(--node-selected);
+  transform: translateY(-2px);
+}
+
+/* Add visual indicator for draggable items */
+.dndnode::after {
+  content: "↦";
+  position: absolute;
+  right: 8px;
+  font-size: 16px;
+  color: var(--primary-color);
+  opacity: 0.6;
+}
+
+.dndnode:hover::after {
+  opacity: 1;
+}
+
+.dndnode.process {
+  border-left: 4px solid var(--accent-color);
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.dndnode.input {
+  border-left: 4px solid var(--secondary-color);
+}
+
+.node-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--primary-color);
+}
+
+.node-panel-instructions {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-color);
+  opacity: 0.9;
+  padding: 0.75rem;
+  background-color: var(--bg-color);
+  border-radius: 4px;
+  border: 2px dashed var(--accent-color);
+  text-align: left;
+  line-height: 1.4;
+}
+
+/* Custom Node Styling */
+.custom-node {
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  background-color: var(--node-bg);
+  min-width: 180px;
+  overflow: hidden;
+}
+
+.custom-node.selected {
+  box-shadow: 0 0 0 2px var(--primary-color) !important;
+}
+
+.custom-node:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-2px);
+}
+
+.custom-node-header {
+  padding: 8px 10px;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 8px 8px 0 0;
+  font-weight: bold;
+}
+
+.custom-node-content {
+  padding: 8px 10px;
+  font-size: 12px;
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+  background-color: var(--node-bg);
+}
+
+/* AttributePanel styling - positioned on RIGHT side */
+.attribute-panel {
+  padding: 1.5rem;
+  background-color: var(--panel-bg);
+  border-left: 1px solid var(--border-color);
+  width: 300px;
+  height: 100%;
+  overflow-y: auto;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
+  position: absolute;
+  top: 0;
+  right: 0; /* Position on the right side */
+  bottom: 0;
+  z-index: 10;
+  color: var(--text-color);
+}
+
+.attribute-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.close-panel-btn {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 0.25rem;
+  font-size: 1.25rem;
+  transition: color 0.2s ease;
+}
+
+.close-panel-btn:hover {
+  color: var(--error-color);
+  background: none;
+  transform: none;
+  box-shadow: none;
+}
+
+.attribute-panel h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0;
+  color: var(--primary-color);
+}
+
+.attribute-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.steps-section {
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+  margin-top: 1rem;
+}
+
+.steps-section h4 {
+  color: var(--accent-color);
+  margin-bottom: 1rem;
+}
+
+.step-item {
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  background-color: var(--bg-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.step-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.step-header h5 {
+  color: var(--primary-color);
+}
+
+.remove-step-btn {
+  background-color: var(--error-color);
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+.add-step-btn {
+  background-color: var(--secondary-color);
+}
+
+.delete-node-btn {
+  background-color: var(--error-color);
+  margin-top: 0.5rem;
+}
+
+.panel-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+/* Input View styling */
+.input-view {
+  padding: 2rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.input-fields-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.input-view h2 {
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 1.8rem;
+}
+
+.input-field-item {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  background-color: var(--node-bg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+
+.input-field-item:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-3px);
+}
+
+.input-field-item h3 {
+  color: var (--primary-color);
+  margin-bottom: 0.5rem;
+}
+
+.input-field-item p {
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+/* JSON Import/Export */
+.json-import-export {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.import-btn, .export-btn {
+  background-color: var(--accent-color);
+}
+
+.error-message {
+  color: var(--error-color);
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  background-color: rgba(231, 76, 60, 0.1);
+  border-radius: 4px;
+}
+
+/* ReactFlow specific overrides */
+.react-flow__node-custom {
+  font-size: 10px;
+  background: var(--node-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-color);
+}
+
+.react-flow__handle {
+  width: 8px;
+  height: 8px;
+  background-color: var(--accent-color);
+}
+
+.react-flow__handle:hover {
+  background-color: var(--primary-color);
+}
+
+/* Make sure nodes are visible with better styling */
+.react-flow__viewport {
+  transition: transform 0.2s ease;
+}
+
+/* Help visualize the draggable area */
+.react-flow__pane {
+  cursor: grab;
+}
+
+.react-flow__pane:active {
+  cursor: grabbing;
+}
+
+/* Improve node panel instructions visibility */
+.node-panel-instructions {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-color);
+  opacity: 0.9;
+  padding: 0.75rem;
+  background-color: var(--bg-color);
+  border-radius: 4px;
+  border: 2px dashed var(--accent-color);
+  text-align: left;
+  line-height: 1.4;
+}
+
+.react-flow__attribution {
+  background: transparent;
+  color: var(--text-color);
+}
+
+.react-flow__controls button {
+  background-color: var(--panel-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+.react-flow__controls button:hover {
+  background-color: var(--node-selected);
+}
+
+.react-flow__panel {
+  background-color: transparent;
+}
+
+.panel-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+/* View toggle button special styling */
+.view-toggle-btn {
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+/* Input Field Editor Specific Styles */
+.input-field-editor {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.editor-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.version-control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 1.5rem;
+}
+
+.version-control input {
+  width: 80px;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.add-field-btn {
+  background-color: var(--secondary-color);
+}
+
+.no-fields-message {
+  text-align: center;
+  padding: 2rem;
+  background-color: var(--panel-bg);
+  border-radius: 8px;
+  border: 1px dashed var(--border-color);
+}
+
+.fields-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.field-item {
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+
+.field-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.field-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.75rem;
+}
+
+.field-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.move-btn {
+  background-color: var(--panel-bg);
+  color: var(--text-color);
+  padding: 0.25rem;
+  font-size: 0.8rem;
+}
+
+.edit-btn {
+  background-color: var(--primary-color);
+}
+
+.delete-btn {
+  background-color: var(--error-color);
+}
+
+.field-details {
+  font-size: 0.9rem;
+}
+
+.field-details p {
+  margin-bottom: 0.5rem;
+}
+
+.required-badge {
+  display: inline-block;
+  background-color: var(--accent-color);
+  color: white;
+  font-size: 0.7rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 10px;
+  margin-top: 0.5rem;
+}
+
+/* Field Editor Modal */
+.field-editor-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.field-editor-content {
+  width: 90%;
+  max-width: 500px;
+  background-color: var(--bg-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.field-editor-content h3 {
+  margin-bottom: 1.5rem;
+  color: var(--primary-color);
+  text-align: center;
+}
+
+.dropdown-options {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background-color: var(--panel-bg);
+}
+
+.dropdown-options label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: var(--accent-color);
+}
+
+.option-item {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  align-items: center;
+}
+
+.option-item input {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.delete-option-btn {
+  background-color: var(--error-color);
+  padding: 0.25rem;
+}
+
+.add-option-btn {
+  background-color: var(--hover-color);
+  font-size: 0.8rem;
+  padding: 0.25rem 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.form-group.checkboxes {
+  flex-direction: row;
+  gap: 1.5rem;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.cancel-btn {
+  background-color: var(--panel-bg);
+  color: var(--text-color);
+}
+
+/* Input View Metadata Form */
+.input-metadata {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto 2rem auto;
+  padding: 1.5rem;
+  background-color: var(--bg-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.input-metadata h2 {
+  color: var(--primary-color);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+.input-metadata input,
+.input-metadata textarea,
+.input-metadata select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-color);
+  background-color: var(--bg-color);
+}
+
+.metadata-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-row {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.form-row .form-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+/* Ensure consistent node styling - no rectangular borders */
+.react-flow__node {
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+
+/* Divider between sections */
+.input-view .input-field-editor {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border-color);
+}
