@@ -15,14 +15,14 @@ const AttributePanel = ({ node, onUpdate, onClose }) => {
       const firstStep = node.steps[0];
       const firstFunctionName = Object.keys(firstStep)[0] || '';
       setFunctionName(firstFunctionName);
-      setStepData(firstStep[firstFunctionName] || {});
+      const { module, ...rest } = firstStep[firstFunctionName] || {};
+      setStepData(rest);
     } else if (!isSpecialNode) {
       // Create default step if node doesn't have any
       const defaultFunctionName = "new_function";
       const defaultStep = {
         "label": node.data.label || "New Function",
         "description": "Add description here",
-        "module": "default",
         "mitre": "Null"
       };
       setFunctionName(defaultFunctionName);
@@ -46,7 +46,8 @@ const AttributePanel = ({ node, onUpdate, onClose }) => {
 
   const handleFunctionNameChange = (e) => {
     setFunctionName(e.target.value);
-    updateNodeWithCurrentStepData(e.target.value, stepData);
+    const { module, ...rest } = stepData;
+    updateNodeWithCurrentStepData(e.target.value, rest);
   };
 
   const handleStepDataChange = (key, value) => {
@@ -54,8 +55,9 @@ const AttributePanel = ({ node, onUpdate, onClose }) => {
       ...stepData,
       [key]: value
     };
-    setStepData(updatedStepData);
-    updateNodeWithCurrentStepData(functionName, updatedStepData);
+    const { module, ...rest } = updatedStepData;
+    setStepData(rest);
+    updateNodeWithCurrentStepData(functionName, rest);
   };
   
   const updateNodeWithCurrentStepData = (funcName, stepDataObj) => {
@@ -140,15 +142,6 @@ const AttributePanel = ({ node, onUpdate, onClose }) => {
                   value={stepData.description || ''}
                   onChange={(e) => handleStepDataChange('description', e.target.value)}
                   rows={3}
-                />
-              </div>
-              
-              <div className="form-group">
-                <label>Module:</label>
-                <input
-                  type="text"
-                  value={stepData.module || ''}
-                  onChange={(e) => handleStepDataChange('module', e.target.value)}
                 />
               </div>
               

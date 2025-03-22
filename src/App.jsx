@@ -73,7 +73,8 @@ function App() {
     type: null,
     subType: null,
     requirec2: "False",
-    version: "1.0.0"
+    version: "1.0.0",
+    modules: [] // Add modules field
   });
 
   // Load theme preference on initial load
@@ -189,7 +190,8 @@ function App() {
             type: parsedData.type || null,
             subType: parsedData.subType || null,
             requirec2: parsedData.requirec2 || "False",
-            version: parsedData.version || "1.0.0"
+            version: parsedData.version || "1.0.0",
+            modules: parsedData.modules || [] // Add modules field
           });
           setJsonData(savedFlow);
         } catch (error) {
@@ -219,7 +221,8 @@ function App() {
           type: parsedData.type || null,
           subType: parsedData.subType || null,
           requirec2: parsedData.requirec2 || "False",
-          version: parsedData.version || "1.0.0"
+          version: parsedData.version || "1.0.0",
+          modules: parsedData.modules || [] // Add modules field
         });
         setJsonData(jsonData);
       }
@@ -244,7 +247,8 @@ function App() {
       type: null,
       subType: null,
       requirec2: "False",
-      version: "1.0.0"
+      version: "1.0.0",
+      modules: [] // Add modules field
     });
   }, [setNodes, setEdges]);
 
@@ -503,6 +507,16 @@ function App() {
                       onChange={(e) => handleMetadataChange('category', e.target.value)}
                     />
                   </div>
+                </div>
+                
+                <div className="form-group">
+                  <label>Module:</label>
+                  <input
+                    type="text"
+                    value={graphMetadata.modules[0] || ''}
+                    onChange={(e) => handleMetadataChange('modules', [e.target.value.trim()])}
+                    placeholder="Enter module"
+                  />
                 </div>
                 
                 <div className="form-group">

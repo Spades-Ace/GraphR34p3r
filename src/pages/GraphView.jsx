@@ -58,20 +58,15 @@ function GraphView({ initialNodes, initialEdges, onSave, graphMetadata }) {
       const newNodeId = generateNodeId(nodes);
       const newNode = createDefaultNode(newNodeId, position);
       
-      // If we have a module from graphMetadata, add it to the new node's steps
-      if (graphMetadata?.modules?.length > 0) {
-        const moduleValue = graphMetadata.modules[0];
-        if (newNode.steps && newNode.steps.length > 0) {
-          newNode.steps = newNode.steps.map(step => {
-            const key = Object.keys(step)[0];
-            return {
-              [key]: {
-                ...step[key],
-                module: moduleValue
-              }
-            };
-          });
-        }
+      // Remove module field from steps
+      if (newNode.steps && newNode.steps.length > 0) {
+        newNode.steps = newNode.steps.map(step => {
+          const key = Object.keys(step)[0];
+          const { module, ...rest } = step[key];
+          return {
+            [key]: rest
+          };
+        });
       }
       
       setNodes((nds) => nds.concat(newNode));

@@ -20,14 +20,12 @@ function NodeAttributesPanel({ node, onUpdate, onClose, graphMetadata }) {
   const handleSave = () => {
     if (!node) return;
     
-    // Update all steps with the module value from graph metadata
+    // Remove module field from steps
     const updatedSteps = steps.map(step => {
       const key = Object.keys(step)[0];
+      const { module, ...rest } = step[key];
       return {
-        [key]: {
-          ...step[key],
-          module: moduleValue // Use the module from graph metadata
-        }
+        [key]: rest
       };
     });
     
