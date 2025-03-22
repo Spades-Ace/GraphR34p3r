@@ -38,7 +38,6 @@ const initialNodes = [
     type: 'customNode',
     data: { label: 'Start', status: 'queued' },
     position: { x: 250, y: 150 },
-    style: { backgroundColor: '#f5f5f5', border: '2px solid #6a5acd' },
     steps: []
   },
   {
@@ -46,7 +45,6 @@ const initialNodes = [
     type: 'customNode',
     data: { label: 'End', status: 'queued' },
     position: { x: 600, y: 150 },
-    style: { backgroundColor: '#f5f5f5', border: '2px solid #6a5acd' },
     steps: []
   },
 ];
@@ -65,8 +63,8 @@ function App() {
   const [inputFields, setInputFields] = useState([]);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [graphMetadata, setGraphMetadata] = useState({
-    name: "Node Visualizer Graph",
-    label: "Node Visualizer Graph",
+    name: "",
+    label: "",
     group: "",
     family: "",
     category: "",
@@ -344,7 +342,7 @@ function App() {
           newNode.data.label = 'Process Node';
           newNode.steps = [{
             "process_step": {
-              "label": "Process Step",
+              "label": "Process Name",
               "description": "Add description for this step",
               "module": "default",
               "mitre": "Null"
@@ -475,6 +473,7 @@ function App() {
                       type="text"
                       value={graphMetadata.name || ''}
                       onChange={(e) => handleMetadataChange('name', e.target.value)}
+                      placeholder="Enter graph name"
                     />
                   </div>
                   
@@ -484,7 +483,7 @@ function App() {
                       type="text"
                       value={graphMetadata.version || '1.0.0'}
                       onChange={(e) => handleMetadataChange('version', e.target.value)}
-                      placeholder="1.0.0"
+                      placeholder="Enter version"
                     />
                   </div>
                 </div>
@@ -495,6 +494,7 @@ function App() {
                     type="text"
                     value={graphMetadata.label || ''}
                     onChange={(e) => handleMetadataChange('label', e.target.value)}
+                    placeholder="Enter label"
                   />
                 </div>
                 
@@ -504,6 +504,7 @@ function App() {
                     type="text"
                     value={graphMetadata.group || ''}
                     onChange={(e) => handleMetadataChange('group', e.target.value)}
+                    placeholder="Enter group"
                   />
                 </div>
                 
@@ -514,6 +515,7 @@ function App() {
                       type="text"
                       value={graphMetadata.family || ''}
                       onChange={(e) => handleMetadataChange('family', e.target.value)}
+                      placeholder="Enter family"
                     />
                   </div>
                   
@@ -523,6 +525,7 @@ function App() {
                       type="text"
                       value={graphMetadata.category || ''}
                       onChange={(e) => handleMetadataChange('category', e.target.value)}
+                      placeholder="Enter category"
                     />
                   </div>
                 </div>
@@ -543,6 +546,7 @@ function App() {
                     value={graphMetadata.description || ''}
                     onChange={(e) => handleMetadataChange('description', e.target.value)}
                     rows={4}
+                    placeholder="Enter description"
                   />
                 </div>
                 
@@ -553,6 +557,7 @@ function App() {
                       type="text"
                       value={graphMetadata.type || ''}
                       onChange={(e) => handleMetadataChange('type', e.target.value)}
+                      placeholder="Enter type"
                     />
                   </div>
                   
@@ -562,6 +567,7 @@ function App() {
                       type="text"
                       value={graphMetadata.subType || ''}
                       onChange={(e) => handleMetadataChange('subType', e.target.value)}
+                      placeholder="Enter sub-type"
                     />
                   </div>
                 </div>

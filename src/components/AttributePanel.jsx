@@ -102,6 +102,7 @@ const AttributePanel = ({ node, onUpdate, onClose }) => {
               type="text"
               value={nodeData.data.label || ''}
               onChange={handleLabelChange}
+              placeholder="Enter label"
             />
           </div>
           
@@ -133,6 +134,7 @@ const AttributePanel = ({ node, onUpdate, onClose }) => {
                   type="text"
                   value={stepData.label || ''}
                   onChange={(e) => handleStepDataChange('label', e.target.value)}
+                  placeholder="Enter step label"
                 />
               </div>
               
@@ -142,6 +144,7 @@ const AttributePanel = ({ node, onUpdate, onClose }) => {
                   value={stepData.description || ''}
                   onChange={(e) => handleStepDataChange('description', e.target.value)}
                   rows={3}
+                  placeholder="Enter description"
                 />
               </div>
               
@@ -151,6 +154,7 @@ const AttributePanel = ({ node, onUpdate, onClose }) => {
                   type="text"
                   value={stepData.mitre || 'Null'}
                   onChange={(e) => handleStepDataChange('mitre', e.target.value)}
+                  placeholder="Enter MITRE"
                 />
               </div>
             </div>

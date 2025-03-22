@@ -99,6 +99,7 @@ function NodeAttributesPanel({ node, onUpdate, onClose, graphMetadata }) {
             type="text" 
             value={label} 
             onChange={(e) => setLabel(e.target.value)}
+            placeholder="Enter node label"
             disabled={isSpecial}
           />
         </div>
@@ -130,6 +131,7 @@ function NodeAttributesPanel({ node, onUpdate, onClose, graphMetadata }) {
                         type="text" 
                         value={functionName} 
                         onChange={(e) => updateFunctionName(index, functionName, e.target.value)}
+                        placeholder="Enter function name"
                       />
                     </div>
                     
@@ -139,6 +141,7 @@ function NodeAttributesPanel({ node, onUpdate, onClose, graphMetadata }) {
                         type="text" 
                         value={stepData.label} 
                         onChange={(e) => updateStep(index, functionName, "label", e.target.value)}
+                        placeholder="Enter step label"
                       />
                     </div>
                     
@@ -147,6 +150,7 @@ function NodeAttributesPanel({ node, onUpdate, onClose, graphMetadata }) {
                       <textarea 
                         value={stepData.description} 
                         onChange={(e) => updateStep(index, functionName, "description", e.target.value)}
+                        placeholder="Enter description"
                       />
                     </div>
                     
@@ -156,6 +160,7 @@ function NodeAttributesPanel({ node, onUpdate, onClose, graphMetadata }) {
                         type="text" 
                         value={stepData.mitre} 
                         onChange={(e) => updateStep(index, functionName, "mitre", e.target.value)}
+                        placeholder="Enter MITRE"
                       />
                     </div>
                     
