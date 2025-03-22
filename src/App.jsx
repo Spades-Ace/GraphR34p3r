@@ -215,7 +215,7 @@ function App() {
             description: parsedData.description || "",
             type: parsedData.type || null,
             subType: parsedData.subType || null,
-            requirec2: parsedData.requirec2 === "True", // Convert to boolean
+            requirec2: parsedData.requirec2 === false, // Convert to boolean
             version: parsedData.version || "1.0.0",
             modules: parsedData.modules || [] // Add modules field
           });
@@ -247,7 +247,7 @@ function App() {
           description: parsedData.description || "",
           type: parsedData.type || null,
           subType: parsedData.subType || null,
-          requirec2: parsedData.requirec2 === "True", // Convert to boolean
+          requirec2: parsedData.requirec2 === false, // Convert to boolean
           version: parsedData.version || "1.0.0",
           modules: parsedData.modules || [] // Add modules field
         });
