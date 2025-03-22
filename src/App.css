@@ -11,6 +11,8 @@
   --node-bg: #ffffff;
   --node-selected: #ede9fe; /* Light purple */
   --accent-color: #8b5cf6; /* Bright purple */
+  --sidebar-width: 220px;
+  --attribute-panel-width: 300px;
 }
 
 .dark {
@@ -71,6 +73,7 @@ body {
   border-bottom: 1px solid var(--border-color);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   height: 60px; /* Fixed height for header */
+  z-index: 10;
 }
 
 .header h1 {
@@ -92,6 +95,7 @@ body {
   flex: 1;
   height: calc(100vh - 60px);
   overflow: hidden;
+  position: relative;
 }
 
 /* Graph View Layout */
@@ -103,16 +107,99 @@ body {
   overflow: hidden;
 }
 
+/* Flow container styling */
 .flow-container {
-  flex: 1;
+  position: absolute;
+  top: 0;
+  left: var(--sidebar-width);
+  width: calc(100% - var(--sidebar-width));
   height: 100%;
-  position: relative;
   overflow: hidden;
-  transition: margin-left 0.3s ease;
+  transition: all 0.3s ease;
 }
 
+/* When sidebar is collapsed, adjust the flow container to take full width */
+.flow-container.sidebar-collapsed {
+  left: 0;
+  width: 100%;
+}
+
+/* When attribute panel is open, adjust the flow container */
 .flow-container-with-panel {
-  margin-right: 300px; /* Space for attribute panel */
+  width: calc(100% - var(--sidebar-width) - var(--attribute-panel-width));
+}
+
+/* When both sidebar is collapsed and attribute panel is open */
+.flow-container.sidebar-collapsed.flow-container-with-panel {
+  width: calc(100% - var(--attribute-panel-width));
+}
+
+/* Sidebar styling */
+.sidebar {
+  width: var(--sidebar-width);
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background-color: var(--panel-bg);
+  border-right: 1px solid var(--border-color);
+  padding: 1rem;
+  overflow-y: auto;
+  box-shadow: 1px 0 5px rgba(0, 0, 0, 0.05);
+  z-index: 5;
+  transition: all 0.3s ease;
+}
+
+.sidebar-collapsed {
+  left: calc(-1 * var(--sidebar-width));
+  box-shadow: none;
+}
+
+/* Attribute panel styling */
+.attribute-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--attribute-panel-width);
+  height: 100%;
+  background-color: var(--panel-bg);
+  border-left: 1px solid var(--border-color);
+  padding: 1.5rem;
+  overflow-y: auto;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.05);
+  z-index: 5;
+  color: var(--text-color);
+  transition: transform 0.3s ease;
+}
+
+/* Improved sidebar toggle button */
+.sidebar-toggle {
+  position: absolute;
+  left: var(--sidebar-width);
+  top: 10px;
+  z-index: 100;
+  background-color: var(--primary-color);
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.sidebar-toggle:hover {
+  background-color: var(--hover-color);
+  transform: scale(1.1);
+}
+
+.sidebar-toggle.collapsed {
+  left: 10px;
 }
 
 /* Button styling */

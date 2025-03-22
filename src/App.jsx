@@ -11,7 +11,7 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import './App.css';
 import localforage from 'localforage';
-import { Sun, Moon, Upload, Download, RotateCcw, Save, PanelLeft } from 'lucide-react';
+import { Sun, Moon, Upload, Download, RotateCcw, Save, PanelLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Custom node types
 import CustomNode from './components/CustomNode';
@@ -63,6 +63,7 @@ function App() {
   const [rfInstance, setRfInstance] = useState(null);
   const [jsonData, setJsonData] = useState(null);
   const [inputFields, setInputFields] = useState([]);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [graphMetadata, setGraphMetadata] = useState({
     name: "Node Visualizer Graph",
     label: "Node Visualizer Graph",
@@ -136,6 +137,11 @@ function App() {
   // Close the attribute panel
   const handleClosePanel = useCallback(() => {
     setSelectedNode(null);
+  }, []);
+
+  // Toggle sidebar collapsed state
+  const toggleSidebar = useCallback(() => {
+    setSidebarCollapsed(prevState => !prevState);
   }, []);
 
   // Save current graph state
@@ -388,7 +394,7 @@ function App() {
         {viewMode === 'graph' ? (
           <div className="graph-view">
             <ReactFlowProvider>
-              <div className="sidebar">
+              <div className={`sidebar ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
                 <NodePanel />
                 <div className="node-panel-instructions">
                   <strong>How to use:</strong>
@@ -400,8 +406,20 @@ function App() {
                   </ol>
                 </div>
               </div>
+              
+              <button 
+                className={`sidebar-toggle ${sidebarCollapsed ? 'collapsed' : ''}`} 
+                onClick={toggleSidebar}
+                aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              >
+                {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+              </button>
+              
               <div 
-                className={`flow-container ${selectedNode ? 'flow-container-with-panel' : ''}`} 
+                className={`flow-container 
+                  ${sidebarCollapsed ? 'sidebar-collapsed' : ''} 
+                  ${selectedNode ? 'flow-container-with-panel' : ''}
+                `}
                 ref={reactFlowWrapper}
               >
                 <ReactFlow
