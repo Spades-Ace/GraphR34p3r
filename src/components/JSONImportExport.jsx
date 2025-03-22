@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { Download, Upload } from 'lucide-react';
+import './JSONImportExport.css';
 
 const JSONImportExport = ({ onImport, onExport, jsonData }) => {
   const [error, setError] = useState(null);

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Plus, Trash2, Save, ArrowUp, ArrowDown } from 'lucide-react';
+import './InputFieldEditor.css';
 
 const InputFieldEditor = ({ inputFields = [], onSave }) => {
   const [fields, setFields] = useState(inputFields);

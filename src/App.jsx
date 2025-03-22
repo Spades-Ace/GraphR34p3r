@@ -19,10 +19,12 @@ import AttributePanel from './components/AttributePanel';
 import NodePanel from './components/NodePanel';
 import JSONImportExport from './components/JSONImportExport';
 import InputFieldEditor from './components/InputFieldEditor';
+import GraphView from "./pages/GraphView";
+import InputView from "./pages/InputView";
 
 // Utilities
-import { generateNodeId, createDefaultNode } from '../utils/nodeHelpers';
-import { createFullJson, parseJsonData } from '../utils/jsonHelpers';
+import { generateNodeId, createDefaultNode } from "./utils/nodeHelpers";
+import { createFullJson, parseJsonData } from "./utils/jsonHelpers";
 
 // Initialize the node types
 const nodeTypes = {

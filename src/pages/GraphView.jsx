@@ -6,9 +6,9 @@ import ReactFlow, {
   Controls,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import CustomNode from '../src/components/CustomNode';
-import { generateNodeId, createDefaultNode, isSpecialNode } from '../utils/nodeHelpers';
-import NodeAttributesPanel from '../src/components/NodeAttributesPanel';
+import CustomNode from "../components/CustomNode";
+import { generateNodeId, createDefaultNode, isSpecialNode } from "../utils/nodeHelpers";
+import NodeAttributesPanel from "../../components/NodeAttributesPanel";
 import { ChevronLeft, ChevronRight, PanelLeftOpen, PanelLeftClose } from 'lucide-react';
 
 const nodeTypes = {

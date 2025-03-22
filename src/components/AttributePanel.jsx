@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import './AttributePanel.css';
 
 const AttributePanel = ({ node, onUpdate, onClose }) => {
   const [nodeData, setNodeData] = useState({ ...node });
