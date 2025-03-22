@@ -8,7 +8,7 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import CustomNode from "../components/CustomNode";
 import { generateNodeId, createDefaultNode, isSpecialNode } from "../utils/nodeHelpers";
-import NodeAttributesPanel from "../../components/NodeAttributesPanel";
+import NodeAttributesPanel from "../components/NodeAttributesPanel";
 import { ChevronLeft, ChevronRight, PanelLeftOpen, PanelLeftClose } from 'lucide-react';
 
 const nodeTypes = {
