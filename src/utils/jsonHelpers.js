@@ -20,7 +20,8 @@ export const parseJsonData = (jsonData) => {
       description: jsonData.description || '',
       category: jsonData.category || '',
       family: jsonData.family || '',
-      version: jsonData.version || '1.0.0'
+      version: jsonData.version || '1.0.0',
+      requirec2: jsonData.requirec2 === 'True' // Convert to boolean
     };
   } catch (error) {
     console.error("Error parsing JSON:", error);
@@ -64,6 +65,6 @@ export const createFullJson = (data) => {
     "type": null,
     "subType": null,
     "input_fields": data.inputFields || [],
-    "requirec2": "False"
+    "requirec2": data.requirec2 || false // Change to boolean
   };
 };

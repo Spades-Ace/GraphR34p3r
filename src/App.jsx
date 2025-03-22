@@ -71,7 +71,7 @@ function App() {
     description: "",
     type: null,
     subType: null,
-    requirec2: "False",
+    requirec2: false, // Change to boolean
     version: "1.0.0",
     modules: [] // Add modules field
   });
@@ -215,7 +215,7 @@ function App() {
             description: parsedData.description || "",
             type: parsedData.type || null,
             subType: parsedData.subType || null,
-            requirec2: parsedData.requirec2 || "False",
+            requirec2: parsedData.requirec2 === "True", // Convert to boolean
             version: parsedData.version || "1.0.0",
             modules: parsedData.modules || [] // Add modules field
           });
@@ -247,7 +247,7 @@ function App() {
           description: parsedData.description || "",
           type: parsedData.type || null,
           subType: parsedData.subType || null,
-          requirec2: parsedData.requirec2 || "False",
+          requirec2: parsedData.requirec2 === "True", // Convert to boolean
           version: parsedData.version || "1.0.0",
           modules: parsedData.modules || [] // Add modules field
         });
@@ -273,7 +273,7 @@ function App() {
       description: "",
       type: null,
       subType: null,
-      requirec2: "False",
+      requirec2: false, // Change to boolean
       version: "1.0.0",
       modules: [] // Add modules field
     });
@@ -383,7 +383,7 @@ function App() {
   const handleMetadataChange = (key, value) => {
     setGraphMetadata(prev => ({
       ...prev,
-      [key]: value
+      [key]: key === 'requirec2' ? Boolean(value) : value // Convert to boolean
     }));
   };
 
@@ -599,8 +599,8 @@ function App() {
                   <input
                     type="checkbox"
                     id="requirec2"
-                    checked={graphMetadata.requirec2 === "True"}
-                    onChange={(e) => handleMetadataChange('requirec2', e.target.checked ? "True" : "False")}
+                    checked={graphMetadata.requirec2}
+                    onChange={(e) => handleMetadataChange('requirec2', e.target.checked)}
                   />
                   <label htmlFor="requirec2">Require C2</label>
                 </div>

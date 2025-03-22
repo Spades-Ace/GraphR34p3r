@@ -12,7 +12,7 @@ function InputView({ inputFields, onSave, graphMetadata }) {
     type: null,
     subType: null,
     modules: [],
-    requirec2: 'False'
+    requirec2: false // Change to boolean
   });
 
   const addInputField = () => {
@@ -68,7 +68,7 @@ function InputView({ inputFields, onSave, graphMetadata }) {
   const updateMetadata = (field, value) => {
     setMetadata({
       ...metadata,
-      [field]: value
+      [field]: field === 'requirec2' ? Boolean(value) : value // Convert to boolean
     });
   };
 
@@ -300,8 +300,8 @@ function InputView({ inputFields, onSave, graphMetadata }) {
             <input
               type="checkbox"
               id="requirec2"
-              checked={metadata.requirec2 === 'True'}
-              onChange={(e) => updateMetadata("requirec2", e.target.checked ? 'True' : 'False')}
+              checked={metadata.requirec2}
+              onChange={(e) => updateMetadata('requirec2', e.target.checked)}
             />
             <label htmlFor="requirec2">Require C2</label>
           </div>
