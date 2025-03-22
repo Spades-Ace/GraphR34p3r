@@ -395,7 +395,7 @@ function App() {
   return (
     <div className={`app ${isDarkMode ? 'dark' : 'light'}`}>
       <div className="header">
-        <h1>Node Visualizer</h1>
+        <h1>Graph R34p3r</h1>
         <div className="header-controls">
           <button onClick={toggleView} className="view-toggle-btn">
             {viewMode === 'graph' ? <PanelLeft size={16} /> : <PanelLeft size={16} />}
