@@ -11,6 +11,15 @@ export const parseJsonData = (jsonData) => {
     const modules = jsonData.graph?.modules || [];
     const inputFields = jsonData.input_fields || [];
     
+    // Sort nodes by id
+    nodes.sort((a, b) => {
+      if (a.id === 'node_start') return -1;
+      if (b.id === 'node_start') return 1;
+      if (a.id === 'node_end') return 1;
+      if (b.id === 'node_end') return -1;
+      return a.id.localeCompare(b.id);
+    });
+    
     return { 
       nodes, 
       edges, 
@@ -38,21 +47,29 @@ export const createFullJson = (data) => {
     "version": data.version || "1.0.0",
     "graph": {
       "graph": {
-        "nodes": data.nodes.map(node => ({
-          ...node,
-          // Ensure each node has status property but it's not shown to user
-          data: {
-            ...node.data,
-            status: node.data.status || 'queued'
-          },
-          steps: node.steps || [],
-          info: node.info || {}
-        })),
-        "edges": data.edges.map(edge => ({
-          ...edge,
-          info: edge.info || {},
-          status: edge.status || 'queued'
-        }))
+        "nodes": data.nodes.map(node => {
+          const { width, height, selected, positionAbsolute, dragging, ...rest } = node;
+          return {
+            ...rest,
+            position: { x: 0, y: 0 },
+            steps: node.steps.map(step => {
+              const key = Object.keys(step)[0];
+              return {
+                [key]: {
+                  ...step[key],
+                  module: data.modules[0] || ''
+                }
+              };
+            })
+          };
+        }),
+        "edges": data.edges.map(edge => {
+          const { sourceHandle, targetHandle, ...rest } = edge;
+          return {
+            ...rest,
+            id: edge.id.replace(/^e/, '')
+          };
+        })
       },
       "modules": data.modules || []
     },
