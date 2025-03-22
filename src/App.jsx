@@ -11,7 +11,7 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import './App.css';
 import localforage from 'localforage';
-import { Sun, Moon, Upload, Download, RotateCcw, Save, PanelLeft } from 'lucide-react';
+import { Sun, Moon, Upload, Download, RotateCcw, Save, PanelLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // Custom node types
 import CustomNode from './components/CustomNode';
@@ -19,10 +19,12 @@ import AttributePanel from './components/AttributePanel';
 import NodePanel from './components/NodePanel';
 import JSONImportExport from './components/JSONImportExport';
 import InputFieldEditor from './components/InputFieldEditor';
+import GraphView from "./pages/GraphView";
+import InputView from "./pages/InputView";
 
 // Utilities
-import { generateNodeId, createDefaultNode } from '../utils/nodeHelpers';
-import { createFullJson, parseJsonData } from '../utils/jsonHelpers';
+import { generateNodeId, createDefaultNode } from "./utils/nodeHelpers";
+import { createFullJson, parseJsonData } from "./utils/jsonHelpers";
 
 // Initialize the node types
 const nodeTypes = {
@@ -61,6 +63,7 @@ function App() {
   const [rfInstance, setRfInstance] = useState(null);
   const [jsonData, setJsonData] = useState(null);
   const [inputFields, setInputFields] = useState([]);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [graphMetadata, setGraphMetadata] = useState({
     name: "Node Visualizer Graph",
     label: "Node Visualizer Graph",
@@ -71,7 +74,8 @@ function App() {
     type: null,
     subType: null,
     requirec2: "False",
-    version: "1.0.0"
+    version: "1.0.0",
+    modules: [] // Add modules field
   });
 
   // Load theme preference on initial load
@@ -135,6 +139,11 @@ function App() {
     setSelectedNode(null);
   }, []);
 
+  // Toggle sidebar collapsed state
+  const toggleSidebar = useCallback(() => {
+    setSidebarCollapsed(prevState => !prevState);
+  }, []);
+
   // Save current graph state
   const onSave = useCallback(() => {
     if (rfInstance) {
@@ -187,7 +196,8 @@ function App() {
             type: parsedData.type || null,
             subType: parsedData.subType || null,
             requirec2: parsedData.requirec2 || "False",
-            version: parsedData.version || "1.0.0"
+            version: parsedData.version || "1.0.0",
+            modules: parsedData.modules || [] // Add modules field
           });
           setJsonData(savedFlow);
         } catch (error) {
@@ -217,7 +227,8 @@ function App() {
           type: parsedData.type || null,
           subType: parsedData.subType || null,
           requirec2: parsedData.requirec2 || "False",
-          version: parsedData.version || "1.0.0"
+          version: parsedData.version || "1.0.0",
+          modules: parsedData.modules || [] // Add modules field
         });
         setJsonData(jsonData);
       }
@@ -242,7 +253,8 @@ function App() {
       type: null,
       subType: null,
       requirec2: "False",
-      version: "1.0.0"
+      version: "1.0.0",
+      modules: [] // Add modules field
     });
   }, [setNodes, setEdges]);
 
@@ -382,7 +394,7 @@ function App() {
         {viewMode === 'graph' ? (
           <div className="graph-view">
             <ReactFlowProvider>
-              <div className="sidebar">
+              <div className={`sidebar ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
                 <NodePanel />
                 <div className="node-panel-instructions">
                   <strong>How to use:</strong>
@@ -394,8 +406,20 @@ function App() {
                   </ol>
                 </div>
               </div>
+              
+              <button 
+                className={`sidebar-toggle ${sidebarCollapsed ? 'collapsed' : ''}`} 
+                onClick={toggleSidebar}
+                aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              >
+                {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+              </button>
+              
               <div 
-                className={`flow-container ${selectedNode ? 'flow-container-with-panel' : ''}`} 
+                className={`flow-container 
+                  ${sidebarCollapsed ? 'sidebar-collapsed' : ''} 
+                  ${selectedNode ? 'flow-container-with-panel' : ''}
+                `}
                 ref={reactFlowWrapper}
               >
                 <ReactFlow
@@ -501,6 +525,16 @@ function App() {
                       onChange={(e) => handleMetadataChange('category', e.target.value)}
                     />
                   </div>
+                </div>
+                
+                <div className="form-group">
+                  <label>Module:</label>
+                  <input
+                    type="text"
+                    value={graphMetadata.modules[0] || ''}
+                    onChange={(e) => handleMetadataChange('modules', [e.target.value.trim()])}
+                    placeholder="Enter module"
+                  />
                 </div>
                 
                 <div className="form-group">

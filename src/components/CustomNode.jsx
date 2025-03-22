@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { Activity, AlertCircle, CheckCircle } from 'lucide-react';
+import './CustomNode.css';
 
 const CustomNode = ({ data, isConnectable }) => {
   const [isSelected, setIsSelected] = useState(false);
