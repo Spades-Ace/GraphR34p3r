@@ -9,16 +9,19 @@ import 'reactflow/dist/style.css';
 import CustomNode from '../components/CustomNode';
 import { generateNodeId, createDefaultNode, isSpecialNode } from '../utils/nodeHelpers';
 import NodeAttributesPanel from '../components/NodeAttributesPanel';
+import { ChevronLeft, ChevronRight, PanelLeftOpen, PanelLeftClose } from 'lucide-react';
 
 const nodeTypes = {
   customNode: CustomNode,
 };
 
-function GraphView({ initialNodes, initialEdges, onSave }) {
+function GraphView({ initialNodes, initialEdges, onSave, graphMetadata }) {
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes || []);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges || []);
   const [selectedNode, setSelectedNode] = useState(null);
   const [showAttributes, setShowAttributes] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [attributePanelVisible, setAttributePanelVisible] = useState(false);
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge({ ...params, status: "queued" }, eds)),
@@ -29,6 +32,7 @@ function GraphView({ initialNodes, initialEdges, onSave }) {
     const node = nodes.find(n => n.id === nodeId);
     setSelectedNode(node);
     setShowAttributes(true);
+    setAttributePanelVisible(true);
   }, [nodes]);
 
   const onDragOver = useCallback((event) => {
@@ -54,9 +58,25 @@ function GraphView({ initialNodes, initialEdges, onSave }) {
       const newNodeId = generateNodeId(nodes);
       const newNode = createDefaultNode(newNodeId, position);
       
+      // If we have a module from graphMetadata, add it to the new node's steps
+      if (graphMetadata?.modules?.length > 0) {
+        const moduleValue = graphMetadata.modules[0];
+        if (newNode.steps && newNode.steps.length > 0) {
+          newNode.steps = newNode.steps.map(step => {
+            const key = Object.keys(step)[0];
+            return {
+              [key]: {
+                ...step[key],
+                module: moduleValue
+              }
+            };
+          });
+        }
+      }
+      
       setNodes((nds) => nds.concat(newNode));
     },
-    [nodes, setNodes]
+    [nodes, setNodes, graphMetadata]
   );
 
   const handleNodeUpdate = useCallback((updatedNode, deleteNode = false) => {
@@ -71,12 +91,32 @@ function GraphView({ initialNodes, initialEdges, onSave }) {
       
       setSelectedNode(null);
       setShowAttributes(false);
+      setAttributePanelVisible(false);
       return;
     }
     
     if (!updatedNode) {
       setShowAttributes(false);
+      setAttributePanelVisible(false);
       return;
+    }
+    
+    // Apply module from graph metadata if available and node is not a special node
+    if (graphMetadata?.modules?.length > 0 && 
+        updatedNode.steps && 
+        updatedNode.steps.length > 0 && 
+        !isSpecialNode(updatedNode.id)) {
+      
+      const moduleValue = graphMetadata.modules[0];
+      updatedNode.steps = updatedNode.steps.map(step => {
+        const key = Object.keys(step)[0];
+        return {
+          [key]: {
+            ...step[key],
+            module: moduleValue
+          }
+        };
+      });
     }
     
     setNodes((nds) => 
@@ -89,7 +129,8 @@ function GraphView({ initialNodes, initialEdges, onSave }) {
     );
     
     setShowAttributes(false);
-  }, [selectedNode, setNodes, setEdges]);
+    setAttributePanelVisible(false);
+  }, [selectedNode, setNodes, setEdges, graphMetadata]);
 
   const handleSaveGraph = () => {
     if (onSave) {
@@ -97,8 +138,62 @@ function GraphView({ initialNodes, initialEdges, onSave }) {
     }
   };
 
+  const toggleSidebar = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
+
+  const toggleAttributePanel = () => {
+    setAttributePanelVisible(!attributePanelVisible);
+    if (!attributePanelVisible) {
+      setShowAttributes(true);
+    }
+  };
+
+  const handleCloseAttributePanel = () => {
+    setShowAttributes(false);
+    setAttributePanelVisible(false);
+  };
+
   return (
     <div className="graph-view">
+      <div className={`sidebar ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+        <div className="node-panel">
+          <h3>Process Nodes</h3>
+          <div 
+            className="dndnode process" 
+            onDragStart={(event) => {
+              event.dataTransfer.setData('application/reactflow', 'process');
+            }}
+            draggable
+          >
+            Process Node
+          </div>
+          
+          <h3>Input Nodes</h3>
+          <div 
+            className="dndnode input" 
+            onDragStart={(event) => {
+              event.dataTransfer.setData('application/reactflow', 'input');
+            }}
+            draggable
+          >
+            Input Field
+          </div>
+          
+          <div className="node-panel-instructions">
+            <p>Drag nodes to the canvas and connect them to create your graph. Click on a node to edit its properties.</p>
+          </div>
+        </div>
+      </div>
+      
+      <button 
+        className={`sidebar-toggle ${sidebarCollapsed ? 'collapsed' : ''}`} 
+        onClick={toggleSidebar}
+        aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+      >
+        {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+      </button>
+      
       <div className="react-flow-container">
         <ReactFlow
           nodes={nodes}
@@ -111,15 +206,30 @@ function GraphView({ initialNodes, initialEdges, onSave }) {
           nodeTypes={nodeTypes}
           fitView
           elementsSelectable={true}
+          onNodeClick={(e, node) => onNodeClick(node.id)}
         >
           <Controls />
         </ReactFlow>
+
+        {/* Attribute Panel Toggle Button */}
+        <button 
+          className="attribute-panel-toggle" 
+          onClick={toggleAttributePanel}
+          aria-label={attributePanelVisible ? 'Hide attribute panel' : 'Show attribute panel'}
+        >
+          {attributePanelVisible ? <PanelLeftClose size={16} /> : <PanelLeftOpen size={16} />}
+        </button>
+
+        {/* Attribute Panel with visibility class */}
         {showAttributes && (
-          <NodeAttributesPanel 
-            node={selectedNode} 
-            onUpdate={handleNodeUpdate}
-            onClose={() => setShowAttributes(false)}
-          />
+          <div className={`attribute-panel ${attributePanelVisible ? 'visible' : ''}`}>
+            <NodeAttributesPanel 
+              node={selectedNode} 
+              onUpdate={handleNodeUpdate}
+              onClose={handleCloseAttributePanel}
+              graphMetadata={graphMetadata}
+            />
+          </div>
         )}
       </div>
       <div className="graph-actions">
