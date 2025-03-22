@@ -156,7 +156,7 @@ function App() {
       });
 
       // Save to local storage
-      localforage.setItem('node-visualizer-flow', jsonOutput);
+      localforage.setItem('Graph-Visualizer-Flow', jsonOutput);
       
       // Make available for export
       setJsonData(jsonOutput);
@@ -164,7 +164,7 @@ function App() {
       // Optional: Download JSON file
       const dataStr = JSON.stringify(jsonOutput, null, 2);
       const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-      const exportFileDefaultName = 'node-visualizer-flow.json';
+      const exportFileDefaultName = 'Graph-Visualizer-Flow.json';
 
       const linkElement = document.createElement('a');
       linkElement.setAttribute('href', dataUri);
@@ -173,20 +173,42 @@ function App() {
     }
   }, [rfInstance, graphMetadata, inputFields]);
 
+  // Function to distribute nodes evenly
+  const distributeNodes = (nodes) => {
+    const spacingX = 300; // Horizontal spacing between nodes
+    const spacingY = 150; // Vertical spacing between nodes
+    let currentX = 0;
+    let currentY = 0;
+
+    return nodes.map((node, index) => {
+      if (index % 5 === 0 && index !== 0) { // Move to the next row after 5 nodes
+        currentX = 0;
+        currentY += spacingY;
+      }
+      const newNode = {
+        ...node,
+        position: { x: currentX, y: currentY },
+      };
+      currentX += spacingX;
+      return newNode;
+    });
+  };
+
   // Restore saved graph
   const onRestore = useCallback(() => {
-    localforage.getItem('node-visualizer-flow').then((savedFlow) => {
+    localforage.getItem('Graph-Visualizer-Flow').then((savedFlow) => {
       if (savedFlow) {
         try {
           const parsedData = parseJsonData(savedFlow);
-          
+          const distributedNodes = distributeNodes(parsedData.nodes || []);
+
           // Update states
-          setNodes(parsedData.nodes || []);
+          setNodes(distributedNodes);
           setEdges(parsedData.edges || []);
           setInputFields(parsedData.inputFields || []);
           setGraphMetadata({
-            name: parsedData.name || "Node Visualizer Graph",
-            label: parsedData.label || "Node Visualizer Graph",
+            name: parsedData.name || "Graph Visualizer",
+            label: parsedData.label || "Graph Visualizer",
             group: parsedData.group || "",
             family: parsedData.family || "",
             category: parsedData.category || "",
@@ -210,14 +232,15 @@ function App() {
     try {
       if (jsonData) {
         const parsedData = parseJsonData(jsonData);
-        
+        const distributedNodes = distributeNodes(parsedData.nodes || []);
+
         // Update states
-        setNodes(parsedData.nodes || []);
+        setNodes(distributedNodes);
         setEdges(parsedData.edges || []);
         setInputFields(parsedData.inputFields || []);
         setGraphMetadata({
-          name: parsedData.name || "Node Visualizer Graph",
-          label: parsedData.label || "Node Visualizer Graph",
+          name: parsedData.name || "Graph Visualizer",
+          label: parsedData.label || "Graph Visualizer",
           group: parsedData.group || "",
           family: parsedData.family || "",
           category: parsedData.category || "",
@@ -242,8 +265,8 @@ function App() {
     setSelectedNode(null);
     setInputFields([]);
     setGraphMetadata({
-      name: "Node Visualizer Graph",
-      label: "Node Visualizer Graph",
+      name: "Graph Visualizer",
+      label: "Graph Visualizer",
       group: "",
       family: "",
       category: "",

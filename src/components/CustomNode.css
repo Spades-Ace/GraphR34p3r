@@ -24,6 +24,10 @@
   color: white;
   border-radius: 8px 8px 0 0;
   font-weight: bold;
+  white-space: normal; /* Allow text to wrap */
+  word-wrap: break-word; /* Break long words */
+  overflow-wrap: break-word; /* Ensure long words break */
+  max-width: 180px; /* Set a max width to ensure wrapping */
 }
 
 .custom-node-content {
