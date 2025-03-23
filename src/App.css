@@ -83,12 +83,17 @@ body {
 }
 
 /* Adjust the margins to overlap the transparent margin of the SVG title with the logo */
-.header img.app-title {
+.header-logo-title a {
+  display: flex;
+  align-items: center;
+}
+
+.header-logo-title img.app-title {
   margin-left: -30px; /* Adjust this value as needed to overlap the transparent margin */
   margin-top: 0;
 }
 
-.header img.app-icon {
+.header-logo-title img.app-icon {
   width: 60px; /* Increase the width */
   height: 60px; /* Increase the height */
   margin-right: 0;

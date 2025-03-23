@@ -398,8 +398,10 @@ function App() {
     <div className={`app ${isDarkMode ? 'dark' : 'light'}`}>
       <div className="header">
         <div className="header-logo-title">
-          <img src={icon7} alt="App Icon" className="app-icon" />
-          <img src={titleSvg} alt="Graph R34p3r" className="app-title" />
+          <a href="https://graphr34p3r.exace.in/">
+            <img src={icon7} alt="App Icon" className="app-icon" />
+            <img src={titleSvg} alt="Graph R34p3r" className="app-title" />
+          </a>
         </div>
         <div className="header-controls">
           <button onClick={toggleView} className="view-toggle-btn">
