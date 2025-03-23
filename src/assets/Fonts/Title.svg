@@ -1,0 +1,52 @@
+<svg fill="none" viewBox="0 0 500 100" width="500" height="100" xmlns="http://www.w3.org/2000/svg">
+    <foreignObject width="100%" height="100%">
+        <div xmlns="http://www.w3.org/1999/xhtml">
+
+            <style>
+                @font-face {
+                    font-family: 'Dominica';
+                    src:
+			 url('https://github.com/Spades-Ace/GraphR34p3r/raw/refs/heads/dev2/src/assets/Fonts/Dominica%20Calligraphy.ttf')format('truetype'),
+			 url('https://github.com/Spades-Ace/GraphR34p3r/raw/refs/heads/dev2/src/assets/Fonts/Dominica%20Calligraphy.woff')format('woff'),
+			 url('Dominica Calligraphy.ttf') format('truetype'),
+                         url('Dominica Calligraphy.woff') format('woff');
+                    font-weight: normal;
+                    font-style: normal;
+                }
+
+                h1 {
+                    background: linear-gradient(to right,
+                            #9D00FF,
+                            #BA55D3,
+                            #FF00FF,
+                            #8A2BE2,
+                            #9400D3,
+                            #4B0082,
+                            #6A0DAD,
+                            #7B68EE,
+                            #483D8B,
+                            #FF1493);
+                    -webkit-background-clip: text;
+                    background-clip: text;
+                    color: transparent;
+                    animation: gradientShift 5s ease infinite;
+                    background-size: 400% 100%;
+                    font-family: "Dominica", cursive;
+                    font-weight: 600;
+                    text-align: center;
+                }
+
+                @keyframes gradientShift {
+                    0%, 100% {
+                        background-position: 0 0;
+                    }
+
+                    50% {
+                        background-position: 100% 0;
+                    }
+                }
+            </style>
+            <h1> Graph R34p3r </h1>
+        </div>
+    </foreignObject>
+</svg>

@@ -1,7 +1,19 @@
 import React, { useState } from 'react';
 
-function InputView({ inputFields, onSave }) {
+function InputView({ inputFields, onSave, graphMetadata }) {
   const [fields, setFields] = useState(inputFields || []);
+  const [metadata, setMetadata] = useState(graphMetadata || {
+    name: '',
+    label: '',
+    group: '',
+    family: '',
+    category: '',
+    description: '',
+    type: null,
+    subType: null,
+    modules: [],
+    requirec2: false // Change to boolean
+  });
 
   const addInputField = () => {
     setFields([
@@ -53,9 +65,25 @@ function InputView({ inputFields, onSave }) {
     setFields(updatedFields);
   };
 
+  const updateMetadata = (field, value) => {
+    setMetadata({
+      ...metadata,
+      [field]: field === 'requirec2' ? Boolean(value) : value // Convert to boolean
+    });
+  };
+
+  const updateModules = (value) => {
+    // Convert comma-separated string to array
+    const moduleArray = value.split(',').map(item => item.trim()).filter(item => item);
+    setMetadata({
+      ...metadata,
+      modules: moduleArray
+    });
+  };
+
   const handleSave = () => {
     if (onSave) {
-      onSave(fields);
+      onSave(fields, metadata);
     }
   };
 
@@ -179,6 +207,108 @@ function InputView({ inputFields, onSave }) {
 
   return (
     <div className="input-view">
+      {/* Graph Metadata Section */}
+      <div className="input-metadata">
+        <h2>Graph Metadata</h2>
+        <div className="metadata-form">
+          <div className="form-row">
+            <div className="form-group">
+              <label>Name:</label>
+              <input
+                type="text"
+                value={metadata.name}
+                onChange={(e) => updateMetadata("name", e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>Label:</label>
+              <input
+                type="text"
+                value={metadata.label}
+                onChange={(e) => updateMetadata("label", e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>Group:</label>
+              <input
+                type="text"
+                value={metadata.group}
+                onChange={(e) => updateMetadata("group", e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>Family:</label>
+              <input
+                type="text"
+                value={metadata.family}
+                onChange={(e) => updateMetadata("family", e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>Category:</label>
+              <input
+                type="text"
+                value={metadata.category}
+                onChange={(e) => updateMetadata("category", e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Modules (comma-separated):</label>
+            <input
+              type="text"
+              value={metadata.modules.join(', ')}
+              onChange={(e) => updateModules(e.target.value)}
+              placeholder="Enter modules separated by commas"
+            />
+            <small className="helper-text">These modules will apply to all nodes by default</small>
+          </div>
+
+          <div className="form-group">
+            <label>Description:</label>
+            <textarea
+              value={metadata.description}
+              onChange={(e) => updateMetadata("description", e.target.value)}
+              rows="4"
+            />
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>Type:</label>
+              <input
+                type="text"
+                value={metadata.type || ''}
+                onChange={(e) => updateMetadata("type", e.target.value)}
+              />
+            </div>
+            <div className="form-group">
+              <label>Sub-Type:</label>
+              <input
+                type="text"
+                value={metadata.subType || ''}
+                onChange={(e) => updateMetadata("subType", e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="form-group checkbox-group">
+            <input
+              type="checkbox"
+              id="requirec2"
+              checked={metadata.requirec2}
+              onChange={(e) => updateMetadata('requirec2', e.target.checked)}
+            />
+            <label htmlFor="requirec2">Require C2</label>
+          </div>
+        </div>
+      </div>
+
+      {/* Input Fields Section */}
       <h2>Input Fields</h2>
       <div className="input-fields-list">
         {fields.map((field, index) => renderFieldEditor(field, index))}

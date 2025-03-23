@@ -1,4 +1,5 @@
 import { Box } from 'lucide-react';
+import './NodePanel.css';
 
 const NodePanel = () => {
   const onDragStart = (event, nodeType) => {

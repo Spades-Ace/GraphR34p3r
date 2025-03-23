@@ -11,7 +11,9 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import './App.css';
 import localforage from 'localforage';
-import { Sun, Moon, Upload, Download, RotateCcw, Save, PanelLeft } from 'lucide-react';
+import { Sun, Moon, Upload, Download, RotateCcw, Save, PanelLeft, ChevronLeft, ChevronRight } from 'lucide-react';
+import icon7 from './assets/Icons/icon7-t.png';
+import titleSvg from './assets/Fonts/Title.svg';
 
 // Custom node types
 import CustomNode from './components/CustomNode';
@@ -19,10 +21,12 @@ import AttributePanel from './components/AttributePanel';
 import NodePanel from './components/NodePanel';
 import JSONImportExport from './components/JSONImportExport';
 import InputFieldEditor from './components/InputFieldEditor';
+import GraphView from "./pages/GraphView";
+import InputView from "./pages/InputView";
 
 // Utilities
-import { generateNodeId, createDefaultNode } from '../utils/nodeHelpers';
-import { createFullJson, parseJsonData } from '../utils/jsonHelpers';
+import { generateNodeId, createDefaultNode } from "./utils/nodeHelpers";
+import { createFullJson, parseJsonData } from "./utils/jsonHelpers";
 
 // Initialize the node types
 const nodeTypes = {
@@ -36,7 +40,6 @@ const initialNodes = [
     type: 'customNode',
     data: { label: 'Start', status: 'queued' },
     position: { x: 250, y: 150 },
-    style: { backgroundColor: '#f5f5f5', border: '2px solid #6a5acd' },
     steps: []
   },
   {
@@ -44,7 +47,6 @@ const initialNodes = [
     type: 'customNode',
     data: { label: 'End', status: 'queued' },
     position: { x: 600, y: 150 },
-    style: { backgroundColor: '#f5f5f5', border: '2px solid #6a5acd' },
     steps: []
   },
 ];
@@ -61,17 +63,19 @@ function App() {
   const [rfInstance, setRfInstance] = useState(null);
   const [jsonData, setJsonData] = useState(null);
   const [inputFields, setInputFields] = useState([]);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [graphMetadata, setGraphMetadata] = useState({
-    name: "Node Visualizer Graph",
-    label: "Node Visualizer Graph",
+    name: "",
+    label: "",
     group: "",
     family: "",
     category: "",
     description: "",
     type: null,
     subType: null,
-    requirec2: "False",
-    version: "1.0.0"
+    requirec2: false, // Change to boolean
+    version: "1.0.0",
+    modules: [] // Add modules field
   });
 
   // Load theme preference on initial load
@@ -135,6 +139,11 @@ function App() {
     setSelectedNode(null);
   }, []);
 
+  // Toggle sidebar collapsed state
+  const toggleSidebar = useCallback(() => {
+    setSidebarCollapsed(prevState => !prevState);
+  }, []);
+
   // Save current graph state
   const onSave = useCallback(() => {
     if (rfInstance) {
@@ -149,7 +158,7 @@ function App() {
       });
 
       // Save to local storage
-      localforage.setItem('node-visualizer-flow', jsonOutput);
+      localforage.setItem('GraphR34p3r-Flow', jsonOutput);
       
       // Make available for export
       setJsonData(jsonOutput);
@@ -157,7 +166,7 @@ function App() {
       // Optional: Download JSON file
       const dataStr = JSON.stringify(jsonOutput, null, 2);
       const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-      const exportFileDefaultName = 'node-visualizer-flow.json';
+      const exportFileDefaultName = 'GraphR34p3r-Flow.json';
 
       const linkElement = document.createElement('a');
       linkElement.setAttribute('href', dataUri);
@@ -166,28 +175,51 @@ function App() {
     }
   }, [rfInstance, graphMetadata, inputFields]);
 
+  // Function to distribute nodes evenly
+  const distributeNodes = (nodes) => {
+    const spacingX = 300; // Horizontal spacing between nodes
+    const spacingY = 150; // Vertical spacing between nodes
+    let currentX = 0;
+    let currentY = 0;
+
+    return nodes.map((node, index) => {
+      if (index % 5 === 0 && index !== 0) { // Move to the next row after 5 nodes
+        currentX = 0;
+        currentY += spacingY;
+      }
+      const newNode = {
+        ...node,
+        position: { x: currentX, y: currentY },
+      };
+      currentX += spacingX;
+      return newNode;
+    });
+  };
+
   // Restore saved graph
   const onRestore = useCallback(() => {
-    localforage.getItem('node-visualizer-flow').then((savedFlow) => {
+    localforage.getItem('GraphR34p3r-Flow').then((savedFlow) => {
       if (savedFlow) {
         try {
           const parsedData = parseJsonData(savedFlow);
-          
+          const distributedNodes = distributeNodes(parsedData.nodes || []);
+
           // Update states
-          setNodes(parsedData.nodes || []);
+          setNodes(distributedNodes);
           setEdges(parsedData.edges || []);
           setInputFields(parsedData.inputFields || []);
           setGraphMetadata({
-            name: parsedData.name || "Node Visualizer Graph",
-            label: parsedData.label || "Node Visualizer Graph",
+            name: parsedData.name || "Graph Visualizer",
+            label: parsedData.label || "Graph Visualizer",
             group: parsedData.group || "",
             family: parsedData.family || "",
             category: parsedData.category || "",
             description: parsedData.description || "",
             type: parsedData.type || null,
             subType: parsedData.subType || null,
-            requirec2: parsedData.requirec2 || "False",
-            version: parsedData.version || "1.0.0"
+            requirec2: parsedData.requirec2 === false, // Convert to boolean
+            version: parsedData.version || "1.0.0",
+            modules: parsedData.modules || [] // Add modules field
           });
           setJsonData(savedFlow);
         } catch (error) {
@@ -202,22 +234,24 @@ function App() {
     try {
       if (jsonData) {
         const parsedData = parseJsonData(jsonData);
-        
+        const distributedNodes = distributeNodes(parsedData.nodes || []);
+
         // Update states
-        setNodes(parsedData.nodes || []);
+        setNodes(distributedNodes);
         setEdges(parsedData.edges || []);
         setInputFields(parsedData.inputFields || []);
         setGraphMetadata({
-          name: parsedData.name || "Node Visualizer Graph",
-          label: parsedData.label || "Node Visualizer Graph",
+          name: parsedData.name || "Graph Visualizer",
+          label: parsedData.label || "Graph Visualizer",
           group: parsedData.group || "",
           family: parsedData.family || "",
           category: parsedData.category || "",
           description: parsedData.description || "",
           type: parsedData.type || null,
           subType: parsedData.subType || null,
-          requirec2: parsedData.requirec2 || "False",
-          version: parsedData.version || "1.0.0"
+          requirec2: parsedData.requirec2 === false, // Convert to boolean
+          version: parsedData.version || "1.0.0",
+          modules: parsedData.modules || [] // Add modules field
         });
         setJsonData(jsonData);
       }
@@ -233,16 +267,17 @@ function App() {
     setSelectedNode(null);
     setInputFields([]);
     setGraphMetadata({
-      name: "Node Visualizer Graph",
-      label: "Node Visualizer Graph",
+      name: "Graph Visualizer",
+      label: "Graph Visualizer",
       group: "",
       family: "",
       category: "",
       description: "",
       type: null,
       subType: null,
-      requirec2: "False",
-      version: "1.0.0"
+      requirec2: false, // Change to boolean
+      version: "1.0.0",
+      modules: [] // Add modules field
     });
   }, [setNodes, setEdges]);
 
@@ -332,7 +367,7 @@ function App() {
           newNode.data.label = 'Process Node';
           newNode.steps = [{
             "process_step": {
-              "label": "Process Step",
+              "label": "Process Name",
               "description": "Add description for this step",
               "module": "default",
               "mitre": "Null"
@@ -350,7 +385,7 @@ function App() {
   const handleMetadataChange = (key, value) => {
     setGraphMetadata(prev => ({
       ...prev,
-      [key]: value
+      [key]: key === 'requirec2' ? Boolean(value) : value // Convert to boolean
     }));
   };
 
@@ -362,7 +397,12 @@ function App() {
   return (
     <div className={`app ${isDarkMode ? 'dark' : 'light'}`}>
       <div className="header">
-        <h1>Node Visualizer</h1>
+        <div className="header-logo-title">
+          <a href="https://graphr34p3r.exace.in/">
+            <img src={icon7} alt="App Icon" className="app-icon" />
+            <img src={titleSvg} alt="Graph R34p3r" className="app-title" />
+          </a>
+        </div>
         <div className="header-controls">
           <button onClick={toggleView} className="view-toggle-btn">
             {viewMode === 'graph' ? <PanelLeft size={16} /> : <PanelLeft size={16} />}
@@ -382,7 +422,7 @@ function App() {
         {viewMode === 'graph' ? (
           <div className="graph-view">
             <ReactFlowProvider>
-              <div className="sidebar">
+              <div className={`sidebar ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
                 <NodePanel />
                 <div className="node-panel-instructions">
                   <strong>How to use:</strong>
@@ -394,8 +434,20 @@ function App() {
                   </ol>
                 </div>
               </div>
+              
+              <button 
+                className={`sidebar-toggle ${sidebarCollapsed ? 'collapsed' : ''}`} 
+                onClick={toggleSidebar}
+                aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              >
+                {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+              </button>
+              
               <div 
-                className={`flow-container ${selectedNode ? 'flow-container-with-panel' : ''}`} 
+                className={`flow-container 
+                  ${sidebarCollapsed ? 'sidebar-collapsed' : ''} 
+                  ${selectedNode ? 'flow-container-with-panel' : ''}
+                `}
                 ref={reactFlowWrapper}
               >
                 <ReactFlow
@@ -451,6 +503,7 @@ function App() {
                       type="text"
                       value={graphMetadata.name || ''}
                       onChange={(e) => handleMetadataChange('name', e.target.value)}
+                      placeholder="Enter graph name"
                     />
                   </div>
                   
@@ -460,7 +513,7 @@ function App() {
                       type="text"
                       value={graphMetadata.version || '1.0.0'}
                       onChange={(e) => handleMetadataChange('version', e.target.value)}
-                      placeholder="1.0.0"
+                      placeholder="Enter version"
                     />
                   </div>
                 </div>
@@ -471,6 +524,7 @@ function App() {
                     type="text"
                     value={graphMetadata.label || ''}
                     onChange={(e) => handleMetadataChange('label', e.target.value)}
+                    placeholder="Enter label"
                   />
                 </div>
                 
@@ -480,6 +534,7 @@ function App() {
                     type="text"
                     value={graphMetadata.group || ''}
                     onChange={(e) => handleMetadataChange('group', e.target.value)}
+                    placeholder="Enter group"
                   />
                 </div>
                 
@@ -490,6 +545,7 @@ function App() {
                       type="text"
                       value={graphMetadata.family || ''}
                       onChange={(e) => handleMetadataChange('family', e.target.value)}
+                      placeholder="Enter family"
                     />
                   </div>
                   
@@ -499,8 +555,19 @@ function App() {
                       type="text"
                       value={graphMetadata.category || ''}
                       onChange={(e) => handleMetadataChange('category', e.target.value)}
+                      placeholder="Enter category"
                     />
                   </div>
+                </div>
+                
+                <div className="form-group">
+                  <label>Module:</label>
+                  <input
+                    type="text"
+                    value={graphMetadata.modules[0] || ''}
+                    onChange={(e) => handleMetadataChange('modules', [e.target.value.trim()])}
+                    placeholder="Enter module"
+                  />
                 </div>
                 
                 <div className="form-group">
@@ -509,6 +576,7 @@ function App() {
                     value={graphMetadata.description || ''}
                     onChange={(e) => handleMetadataChange('description', e.target.value)}
                     rows={4}
+                    placeholder="Enter description"
                   />
                 </div>
                 
@@ -519,6 +587,7 @@ function App() {
                       type="text"
                       value={graphMetadata.type || ''}
                       onChange={(e) => handleMetadataChange('type', e.target.value)}
+                      placeholder="Enter type"
                     />
                   </div>
                   
@@ -528,6 +597,7 @@ function App() {
                       type="text"
                       value={graphMetadata.subType || ''}
                       onChange={(e) => handleMetadataChange('subType', e.target.value)}
+                      placeholder="Enter sub-type"
                     />
                   </div>
                 </div>
@@ -536,8 +606,8 @@ function App() {
                   <input
                     type="checkbox"
                     id="requirec2"
-                    checked={graphMetadata.requirec2 === "True"}
-                    onChange={(e) => handleMetadataChange('requirec2', e.target.checked ? "True" : "False")}
+                    checked={graphMetadata.requirec2}
+                    onChange={(e) => handleMetadataChange('requirec2', e.target.checked)}
                   />
                   <label htmlFor="requirec2">Require C2</label>
                 </div>

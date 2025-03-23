@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { Download, Upload } from 'lucide-react';
+import './JSONImportExport.css';
 
 const JSONImportExport = ({ onImport, onExport, jsonData }) => {
   const [error, setError] = useState(null);
@@ -20,6 +21,9 @@ const JSONImportExport = ({ onImport, onExport, jsonData }) => {
         if (!parsedData.graph || !parsedData.graph.graph) {
           throw new Error('Invalid JSON structure: Missing graph data');
         }
+
+        // Convert requirec2 to boolean
+        parsedData.requirec2 = parsedData.requirec2 === 'True';
         
         setError(null);
         onImport(parsedData);

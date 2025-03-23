@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Plus, Trash2, Save, ArrowUp, ArrowDown } from 'lucide-react';
+import './InputFieldEditor.css';
 
 const InputFieldEditor = ({ inputFields = [], onSave }) => {
   const [fields, setFields] = useState(inputFields);
@@ -10,7 +11,7 @@ const InputFieldEditor = ({ inputFields = [], onSave }) => {
   // Handler for adding a new input field
   const handleAddField = () => {
     const newField = {
-      key: `fc_field_${fields.length + 1}`,
+      key: `Field_key_${fields.length + 1}`,
       description: "Enter description here",
       type: "text", // Default type
       label: `Field ${fields.length + 1}`,
@@ -190,6 +191,7 @@ const InputFieldEditor = ({ inputFields = [], onSave }) => {
                 type="text"
                 value={currentField.key || ''}
                 onChange={(e) => handleFieldChange('key', e.target.value)}
+                placeholder="Enter field key"
               />
             </div>
             
@@ -199,6 +201,7 @@ const InputFieldEditor = ({ inputFields = [], onSave }) => {
                 type="text"
                 value={currentField.label || ''}
                 onChange={(e) => handleFieldChange('label', e.target.value)}
+                placeholder="Enter field label"
               />
             </div>
             
@@ -208,6 +211,7 @@ const InputFieldEditor = ({ inputFields = [], onSave }) => {
                 value={currentField.description || ''}
                 onChange={(e) => handleFieldChange('description', e.target.value)}
                 rows={3}
+                placeholder="Enter description"
               />
             </div>
             
@@ -257,6 +261,7 @@ const InputFieldEditor = ({ inputFields = [], onSave }) => {
                 type="text"
                 value={currentField.example || ''}
                 onChange={(e) => handleFieldChange('example', e.target.value)}
+                placeholder="Enter example"
               />
             </div>
             
