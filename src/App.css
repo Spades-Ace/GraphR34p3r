@@ -66,7 +66,7 @@ body {
 /* Header styling */
 .header {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   padding: 0.75rem 1.5rem;
   background-color: var(--panel-bg);
@@ -76,16 +76,24 @@ body {
   z-index: 10;
 }
 
+.header img.app-title {
+  margin-left: 5px;
+  height: 60px;
+}
+
 .header h1 {
   font-size: 1.5rem;
   margin: 0;
   color: var(--primary-color);
   font-weight: 600;
+  display: flex;
+  align-items: center;
 }
 
 .header-controls {
   display: flex;
   gap: 0.5rem;
+  margin-left: auto;
 }
 
 /* Main content layout */
@@ -373,4 +381,14 @@ button:disabled {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.app-icon {
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
+}
+
+.app-title {
+  margin-left: 10px;
 }

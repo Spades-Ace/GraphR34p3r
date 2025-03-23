@@ -12,6 +12,8 @@ import 'reactflow/dist/style.css';
 import './App.css';
 import localforage from 'localforage';
 import { Sun, Moon, Upload, Download, RotateCcw, Save, PanelLeft, ChevronLeft, ChevronRight } from 'lucide-react';
+import icon7 from './assets/Icons/icon7-t.png';
+import titleSvg from './assets/Fonts/Title.svg';
 
 // Custom node types
 import CustomNode from './components/CustomNode';
@@ -395,7 +397,8 @@ function App() {
   return (
     <div className={`app ${isDarkMode ? 'dark' : 'light'}`}>
       <div className="header">
-        <h1>Graph R34p3r</h1>
+        <img src={icon7} alt="App Icon" className="app-icon" />
+        <img src={titleSvg} alt="Graph R34p3r" className="app-title" />
         <div className="header-controls">
           <button onClick={toggleView} className="view-toggle-btn">
             {viewMode === 'graph' ? <PanelLeft size={16} /> : <PanelLeft size={16} />}
