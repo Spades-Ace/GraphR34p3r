@@ -9,8 +9,8 @@ Thank you for considering contributing to the Graph Visualizer project! We welco
 2. **Clone the Repository**: Clone the forked repository to your local machine.
 
    ```bash
-   git clone https://github.com/your-username/Graph-Visualizer.git
-   cd Graph-Visualizer
+   git clone https://github.com/your-username/GraphR34p3r.git
+   cd GraphR34p3r
    ```
 
 3. **Create a Branch**: Create a new branch for your feature or bug fix.
@@ -42,11 +42,11 @@ Please note that this project is released with a [Contributor Code of Conduct](.
 
 ## Reporting Issues
 
-If you encounter any issues or bugs, please report them by opening an issue in the [issue tracker](https://github.com/Spades-Ace/Graph-Visualizer/issues). Provide as much detail as possible to help us understand and resolve the issue quickly.
+If you encounter any issues or bugs, please report them by opening an issue in the [issue tracker](https://github.com/Spades-Ace/GraphR34p3r/issues). Provide as much detail as possible to help us understand and resolve the issue quickly.
 
 ## Feature Requests
 
-We welcome feature requests! If you have an idea for a new feature or an improvement, please open an issue in the [issue tracker](https://github.com/Spades-Ace/Graph-Visualizer/issues) and describe your idea in detail.
+We welcome feature requests! If you have an idea for a new feature or an improvement, please open an issue in the [issue tracker](https://github.com/Spades-Ace/GraphR34p3r/issues) and describe your idea in detail.
 
 ## Contact
 

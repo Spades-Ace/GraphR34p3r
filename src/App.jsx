@@ -158,7 +158,7 @@ function App() {
       });
 
       // Save to local storage
-      localforage.setItem('Graph-Visualizer-Flow', jsonOutput);
+      localforage.setItem('GraphR34p3r-Flow', jsonOutput);
       
       // Make available for export
       setJsonData(jsonOutput);
@@ -166,7 +166,7 @@ function App() {
       // Optional: Download JSON file
       const dataStr = JSON.stringify(jsonOutput, null, 2);
       const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-      const exportFileDefaultName = 'Graph-Visualizer-Flow.json';
+      const exportFileDefaultName = 'GraphR34p3r-Flow.json';
 
       const linkElement = document.createElement('a');
       linkElement.setAttribute('href', dataUri);
@@ -198,7 +198,7 @@ function App() {
 
   // Restore saved graph
   const onRestore = useCallback(() => {
-    localforage.getItem('Graph-Visualizer-Flow').then((savedFlow) => {
+    localforage.getItem('GraphR34p3r-Flow').then((savedFlow) => {
       if (savedFlow) {
         try {
           const parsedData = parseJsonData(savedFlow);
