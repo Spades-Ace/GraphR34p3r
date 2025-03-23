@@ -5,7 +5,10 @@
             <style>
                 @font-face {
                     font-family: 'Dominica';
-                    src: url('Dominica Calligraphy.ttf') format('truetype'),
+                    src:
+			 url('https://github.com/Spades-Ace/Graph-Visualizer/raw/refs/heads/dev2/src/assets/Fonts/Dominica%20Calligraphy.ttf')format('truetype'),
+			 url('https://github.com/Spades-Ace/Graph-Visualizer/raw/refs/heads/dev2/src/assets/Fonts/Dominica%20Calligraphy.woff')format('woff'),
+			 url('Dominica Calligraphy.ttf') format('truetype'),
                          url('Dominica Calligraphy.woff') format('woff');
                     font-weight: normal;
                     font-style: normal;
