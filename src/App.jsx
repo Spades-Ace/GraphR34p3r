@@ -397,8 +397,10 @@ function App() {
   return (
     <div className={`app ${isDarkMode ? 'dark' : 'light'}`}>
       <div className="header">
-        <img src={icon7} alt="App Icon" className="app-icon" />
-        <img src={titleSvg} alt="Graph R34p3r" className="app-title" />
+        <div className="header-logo-title">
+          <img src={icon7} alt="App Icon" className="app-icon" />
+          <img src={titleSvg} alt="Graph R34p3r" className="app-title" />
+        </div>
         <div className="header-controls">
           <button onClick={toggleView} className="view-toggle-btn">
             {viewMode === 'graph' ? <PanelLeft size={16} /> : <PanelLeft size={16} />}
