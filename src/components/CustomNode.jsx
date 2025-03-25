@@ -28,7 +28,7 @@ const CustomNode = ({ data, isConnectable }) => {
       <Handle
         type="target"
         position={Position.Left}
-        style={{ width: 8, height: 8, background: '#6a5acd' }}
+        style={{ width: 14, height: 14, background: '#6a5acd' }}
         isConnectable={isConnectable}
       />
       <div className="custom-node-header">
@@ -45,7 +45,7 @@ const CustomNode = ({ data, isConnectable }) => {
       <Handle
         type="source"
         position={Position.Right}
-        style={{ width: 8, height: 8, background: '#6a5acd' }}
+        style={{ width: 14, height: 14, background: '#6a5acd' }}
         isConnectable={isConnectable}
       />
     </div>
