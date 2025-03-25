@@ -400,8 +400,8 @@ function App() {
         <div className="header-logo-title">
           <a href="https://graphr34p3r.exace.in/">
             <img src={icon7} alt="App Icon" className="app-icon" />
-            <img src={titleSvg} alt="Graph R34p3r" className="app-title" />
           </a>
+            <img src={titleSvg} alt="Graph R34p3r" className="app-title" />        
         </div>
         <div className="header-controls">
           <button onClick={toggleView} className="view-toggle-btn">
