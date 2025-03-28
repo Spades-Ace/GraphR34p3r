@@ -175,24 +175,201 @@ function App() {
     }
   }, [rfInstance, graphMetadata, inputFields]);
 
-  // Function to distribute nodes evenly
-  const distributeNodes = (nodes) => {
+  // Function to distribute nodes based on graph structure
+  const distributeNodes = (nodes, edges = []) => {
     const spacingX = 300; // Horizontal spacing between nodes
     const spacingY = 150; // Vertical spacing between nodes
-    let currentX = 0;
-    let currentY = 0;
-
-    return nodes.map((node, index) => {
-      if (index % 5 === 0 && index !== 0) { // Move to the next row after 5 nodes
-        currentX = 0;
-        currentY += spacingY;
+    const nodeMap = {}; // Map of node id to node
+    const childrenMap = {}; // Map of node id to its children
+    const parentMap = {}; // Map of node id to its parents
+    const nodeLevels = {}; // Map of node id to its level in the graph
+    
+    // Prepare node map
+    nodes.forEach(node => {
+      nodeMap[node.id] = node;
+      childrenMap[node.id] = [];
+      parentMap[node.id] = [];
+    });
+    
+    // Build graph connections
+    edges.forEach(edge => {
+      if (childrenMap[edge.source]) {
+        childrenMap[edge.source].push(edge.target);
       }
-      const newNode = {
-        ...node,
-        position: { x: currentX, y: currentY },
+      if (parentMap[edge.target]) {
+        parentMap[edge.target].push(edge.source);
+      }
+    });
+    
+    // Find start nodes (nodes with no incoming edges)
+    const startNodes = nodes.filter(node => 
+      parentMap[node.id].length === 0 || node.id === 'node_start'
+    );
+    
+    // Assign levels to nodes using BFS
+    let queue = startNodes.map(node => ({ id: node.id, level: 0 }));
+    let visited = {};
+    let maxLevel = 0; // Track max level for end node placement
+    
+    while (queue.length > 0) {
+      const { id, level } = queue.shift();
+      
+      if (visited[id]) {
+        nodeLevels[id] = Math.max(nodeLevels[id], level);
+        maxLevel = Math.max(maxLevel, level);
+        continue;
+      }
+      
+      visited[id] = true;
+      nodeLevels[id] = level;
+      maxLevel = Math.max(maxLevel, level);
+      
+      childrenMap[id].forEach(childId => {
+        queue.push({ id: childId, level: level + 1 });
+      });
+    }
+    
+    // Group nodes by level and parent
+    const nodesByLevel = {};
+    Object.entries(nodeLevels).forEach(([id, level]) => {
+      if (!nodesByLevel[level]) nodesByLevel[level] = [];
+      nodesByLevel[level].push(id);
+    });
+
+    // Create parent-to-children mapping
+    const parentToChildrenMap = {};
+    edges.forEach(edge => {
+      const parentId = edge.source;
+      const childId = edge.target;
+      
+      if (!parentToChildrenMap[parentId]) {
+        parentToChildrenMap[parentId] = [];
+      }
+      
+      // Group children by their level to handle cases where a parent has children at different levels
+      if (nodeLevels[childId] && !parentToChildrenMap[parentId].includes(childId)) {
+        parentToChildrenMap[parentId].push(childId);
+      }
+    });
+    
+    // Position nodes based on level and parent-child relationships
+    const positionedNodes = [...nodes];
+    Object.entries(nodesByLevel).forEach(([level, nodeIds]) => {
+      const x = parseInt(level) * spacingX;
+      
+      // Process nodes at this level
+      nodeIds.forEach(nodeId => {
+        // Skip end node for now, we'll position it separately
+        if (nodeId === 'node_end') return;
+        
+        // Find node index in original array to update
+        const nodeIndex = positionedNodes.findIndex(n => n.id === nodeId);
+        if (nodeIndex === -1) return;
+        
+        // Get all parents of this node
+        const parents = parentMap[nodeId];
+        
+        if (parents.length > 0) {
+          // For simplicity, position based on the first parent
+          const primaryParentId = parents[0];
+          
+          // Get all children of this parent at the same level
+          const siblings = parentToChildrenMap[primaryParentId]?.filter(id => 
+            nodeLevels[id] === parseInt(level) && id !== 'node_end'
+          ) || [];
+          
+          if (siblings.length > 0) {
+            // Sort siblings to ensure consistent ordering
+            siblings.sort();
+            
+            // Find position in siblings
+            const siblingIndex = siblings.indexOf(nodeId);
+            
+            if (siblingIndex !== -1) {
+              // Calculate vertical positioning of siblings centered around parent
+              const totalSiblings = siblings.length;
+              
+              // If even number of children, offset from center
+              // If odd number, the middle child will be directly in front of parent
+              let offset;
+              if (totalSiblings % 2 === 1) {
+                // Odd number of children, can be perfectly centered
+                offset = siblingIndex - Math.floor(totalSiblings / 2);
+              } else {
+                // Even number of children, offset from center
+                offset = siblingIndex - (totalSiblings / 2) + 0.5;
+              }
+              
+              const y = spacingY * offset + spacingY; // Base y-position plus offset
+              
+              positionedNodes[nodeIndex] = {
+                ...positionedNodes[nodeIndex],
+                position: { x, y }
+              };
+            }
+          } else {
+            // No siblings, just place it in front of parent
+            positionedNodes[nodeIndex] = {
+              ...positionedNodes[nodeIndex],
+              position: { x, y: spacingY }
+            };
+          }
+        } else {
+          // No parents, position at default position
+          positionedNodes[nodeIndex] = {
+            ...positionedNodes[nodeIndex],
+            position: { x, y: spacingY }
+          };
+        }
+      });
+    });
+    
+    // Special handling for the end node
+    const endNodeIndex = positionedNodes.findIndex(n => n.id === 'node_end');
+    if (endNodeIndex !== -1) {
+      // Position the end node at the highest level + 1 to ensure it's at the end
+      const endNodeLevel = maxLevel + 1;
+      const endNodeX = endNodeLevel * spacingX;
+      
+      // Find nodes at the highest level that connect to end node
+      const endNodeParents = parentMap['node_end'] || [];
+      const parentsAtMaxLevel = endNodeParents.filter(id => nodeLevels[id] === maxLevel);
+      
+      let endNodeY = spacingY; // Default y position
+      
+      if (parentsAtMaxLevel.length > 0) {
+        // Calculate the average y position of all parents that connect to the end node
+        let totalY = 0;
+        let count = 0;
+        
+        parentsAtMaxLevel.forEach(parentId => {
+          const parentNode = positionedNodes.find(n => n.id === parentId);
+          if (parentNode && parentNode.position) {
+            totalY += parentNode.position.y;
+            count++;
+          }
+        });
+        
+        if (count > 0) {
+          endNodeY = totalY / count; // Average y position
+        }
+      }
+      
+      positionedNodes[endNodeIndex] = {
+        ...positionedNodes[endNodeIndex],
+        position: { x: endNodeX, y: endNodeY }
       };
-      currentX += spacingX;
-      return newNode;
+    }
+    
+    // Fallback positioning for any nodes that didn't get positioned
+    return positionedNodes.map(node => {
+      if (!node.position || (node.position.x === undefined || node.position.y === undefined)) {
+        return {
+          ...node,
+          position: { x: 0, y: 0 },
+        };
+      }
+      return node;
     });
   };
 
@@ -202,7 +379,7 @@ function App() {
       if (savedFlow) {
         try {
           const parsedData = parseJsonData(savedFlow);
-          const distributedNodes = distributeNodes(parsedData.nodes || []);
+          const distributedNodes = distributeNodes(parsedData.nodes || [], parsedData.edges || []);
 
           // Update states
           setNodes(distributedNodes);
@@ -234,7 +411,7 @@ function App() {
     try {
       if (jsonData) {
         const parsedData = parseJsonData(jsonData);
-        const distributedNodes = distributeNodes(parsedData.nodes || []);
+        const distributedNodes = distributeNodes(parsedData.nodes || [], parsedData.edges || []);
 
         // Update states
         setNodes(distributedNodes);
