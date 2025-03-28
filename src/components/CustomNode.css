@@ -49,8 +49,8 @@
 }
 
 .react-flow__handle {
-  width: 8px;
-  height: 8px;
+  width: 14px;
+  height: 14px;
   background-color: var(--accent-color);
 }
 

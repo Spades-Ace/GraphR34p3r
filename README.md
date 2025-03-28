@@ -1,5 +1,5 @@
 <div align="center">
-	<a href="https://github.com/Spades-Ace/GraphR34p3r/tree/dev2">
+	<a href="https://graphr34p3r.exace.in/">
     <img src="https://raw.githubusercontent.com/Spades-Ace/GraphR34p3r/refs/heads/dev2/public/icon7.png" height="150px"/>
 	<br>
     <img src="https://github.com/Spades-Ace/GraphR34p3r/raw/refs/heads/dev2/src/assets/Fonts/Title.svg" height="100"/>
