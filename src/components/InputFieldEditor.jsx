@@ -1,6 +1,97 @@
 import { useState } from 'react';
-import { Plus, Trash2, Save, ArrowUp, ArrowDown } from 'lucide-react';
+import { Plus, Trash2, Save, ArrowUp, ArrowDown, GripVertical } from 'lucide-react';
 import './InputFieldEditor.css';
+import { DndProvider, useDrag, useDrop } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
+import React from 'react';
+
+// Create a draggable field item component
+const DraggableFieldItem = ({ field, index, moveField, handleEditField, handleDeleteField, handleMoveField }) => {
+  const ref = React.useRef(null);
+  
+  const [{ isDragging }, drag] = useDrag({
+    type: 'FIELD',
+    item: { index },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+  
+  const [, drop] = useDrop({
+    accept: 'FIELD',
+    hover(item, monitor) {
+      if (!ref.current) return;
+      const dragIndex = item.index;
+      const hoverIndex = index;
+      
+      // Don't replace items with themselves
+      if (dragIndex === hoverIndex) return;
+      
+      // Determine rectangle on screen
+      const hoverBoundingRect = ref.current.getBoundingClientRect();
+      // Get vertical middle
+      const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+      // Determine mouse position
+      const clientOffset = monitor.getClientOffset();
+      // Get pixels to the top
+      const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+      
+      // Only perform the move when the mouse has crossed half of the item's height
+      // When dragging downwards, only move when the cursor is below 50%
+      // When dragging upwards, only move when the cursor is above 50%
+      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) return;
+      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) return;
+      
+      // Time to actually perform the action
+      moveField(dragIndex, hoverIndex);
+      // Note: we're mutating the monitor item here!
+      // Generally it's better to avoid mutations,
+      // but it's good here for performance
+      item.index = hoverIndex;
+    },
+  });
+  
+  // Apply both drag and drop refs to the entire tile
+  drag(drop(ref));
+  
+  return (
+    <div 
+      ref={ref} 
+      className={`field-item ${isDragging ? 'dragging' : ''}`}
+      style={{ 
+        opacity: isDragging ? 0.4 : 1,
+        cursor: 'grab'
+      }}
+    >
+      <div className="field-item-header">
+        <div className="drag-indicator">
+          <GripVertical size={16} />
+        </div>
+        <h3>{field.label || 'Unnamed Field'}</h3>
+        <div className="field-actions">
+          <button onClick={() => handleMoveField(index, 'up')} className="move-btn">
+            <ArrowUp size={16} />
+          </button>
+          <button onClick={() => handleMoveField(index, 'down')} className="move-btn">
+            <ArrowDown size={16} />
+          </button>
+          <button onClick={() => handleEditField(index)} className="edit-btn">
+            Edit
+          </button>
+          <button onClick={() => handleDeleteField(index)} className="delete-btn">
+            <Trash2 size={16} />
+          </button>
+        </div>
+      </div>
+      <div className="field-details">
+        <p><strong>Type:</strong> {field.type}</p>
+        <p><strong>Key:</strong> {field.key}</p>
+        <p>{field.description}</p>
+        {field.required && <span className="required-badge">Required</span>}
+      </div>
+    </div>
+  );
+};
 
 const InputFieldEditor = ({ inputFields = [], onSave }) => {
   const [fields, setFields] = useState(inputFields);
@@ -12,7 +103,7 @@ const InputFieldEditor = ({ inputFields = [], onSave }) => {
   const handleAddField = () => {
     const newField = {
       key: `Field_key_${fields.length + 1}`,
-      description: "Enter description here",
+      description: "",
       type: "text", // Default type
       label: `Field ${fields.length + 1}`,
       required: true,
@@ -132,6 +223,20 @@ const InputFieldEditor = ({ inputFields = [], onSave }) => {
     setFields(updatedFields);
     onSave(updatedFields);
   };
+  
+  // Function for drag-and-drop reordering
+  const moveField = (dragIndex, hoverIndex) => {
+    const updatedFields = [...fields];
+    const draggedField = updatedFields[dragIndex];
+    
+    // Remove dragged item
+    updatedFields.splice(dragIndex, 1);
+    // Add it at the new position
+    updatedFields.splice(hoverIndex, 0, draggedField);
+    
+    setFields(updatedFields);
+    onSave(updatedFields);
+  };
 
   return (
     <div className="input-field-editor">
@@ -149,35 +254,21 @@ const InputFieldEditor = ({ inputFields = [], onSave }) => {
           <p>No input fields defined. Click "Add Input Field" to create one.</p>
         </div>
       ) : (
-        <div className="fields-list">
-          {fields.map((field, index) => (
-            <div key={index} className="field-item">
-              <div className="field-item-header">
-                <h3>{field.label || 'Unnamed Field'}</h3>
-                <div className="field-actions">
-                  <button onClick={() => handleMoveField(index, 'up')} disabled={index === 0} className="move-btn">
-                    <ArrowUp size={16} />
-                  </button>
-                  <button onClick={() => handleMoveField(index, 'down')} disabled={index === fields.length - 1} className="move-btn">
-                    <ArrowDown size={16} />
-                  </button>
-                  <button onClick={() => handleEditField(index)} className="edit-btn">
-                    Edit
-                  </button>
-                  <button onClick={() => handleDeleteField(index)} className="delete-btn">
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              </div>
-              <div className="field-details">
-                <p><strong>Type:</strong> {field.type}</p>
-                <p><strong>Key:</strong> {field.key}</p>
-                <p>{field.description}</p>
-                {field.required && <span className="required-badge">Required</span>}
-              </div>
-            </div>
-          ))}
-        </div>
+        <DndProvider backend={HTML5Backend}>
+          <div className="fields-list">
+            {fields.map((field, index) => (
+              <DraggableFieldItem
+                key={index}
+                field={field}
+                index={index}
+                moveField={moveField}
+                handleEditField={handleEditField}
+                handleDeleteField={handleDeleteField}
+                handleMoveField={handleMoveField}
+              />
+            ))}
+          </div>
+        </DndProvider>
       )}
 
       {editMode && currentField && (
