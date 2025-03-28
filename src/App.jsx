@@ -209,8 +209,8 @@ function App() {
           setEdges(parsedData.edges || []);
           setInputFields(parsedData.inputFields || []);
           setGraphMetadata({
-            name: parsedData.name || "Graph Visualizer",
-            label: parsedData.label || "Graph Visualizer",
+            name: parsedData.name || "",
+            label: parsedData.label || "",
             group: parsedData.group || "",
             family: parsedData.family || "",
             category: parsedData.category || "",
@@ -241,8 +241,8 @@ function App() {
         setEdges(parsedData.edges || []);
         setInputFields(parsedData.inputFields || []);
         setGraphMetadata({
-          name: parsedData.name || "Graph Visualizer",
-          label: parsedData.label || "Graph Visualizer",
+          name: parsedData.name || "",
+          label: parsedData.label || "",
           group: parsedData.group || "",
           family: parsedData.family || "",
           category: parsedData.category || "",
@@ -267,8 +267,8 @@ function App() {
     setSelectedNode(null);
     setInputFields([]);
     setGraphMetadata({
-      name: "Graph Visualizer",
-      label: "Graph Visualizer",
+      name: "",
+      label: "",
       group: "",
       family: "",
       category: "",
@@ -368,7 +368,7 @@ function App() {
           newNode.steps = [{
             "process_step": {
               "label": "Process Name",
-              "description": "Add description for this step",
+              "description": "",
               "module": "default",
               "mitre": "Null"
             }

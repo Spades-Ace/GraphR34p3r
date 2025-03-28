@@ -103,7 +103,7 @@ const InputFieldEditor = ({ inputFields = [], onSave }) => {
   const handleAddField = () => {
     const newField = {
       key: `Field_key_${fields.length + 1}`,
-      description: "Enter description here",
+      description: "",
       type: "text", // Default type
       label: `Field ${fields.length + 1}`,
       required: true,
